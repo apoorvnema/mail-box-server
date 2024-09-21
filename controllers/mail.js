@@ -16,7 +16,7 @@ exports.send = async (req, res) => {
             subject,
             body,
         });
-        
+
         await mail.save();
         res.status(201).json({ message: 'Mail sent successfully', mail });
     } catch (err) {
@@ -27,6 +27,7 @@ exports.send = async (req, res) => {
 exports.inbox = async (req, res) => {
     try {
         const mails = await Mail.find({ to: req.user._id });
+        const unreadCount = await Mail.countDocuments({ read: false });
         const senderIds = mails.map(mail => mail.from);
         const senders = await User.find({ _id: { $in: senderIds } });
         const senderMap = {};
@@ -37,7 +38,7 @@ exports.inbox = async (req, res) => {
             ...mail.toObject(),
             sender: senderMap[mail.from]
         }));
-        res.status(200).json(mailsWithSenders);
+        res.status(200).json({mailsWithSenders, unreadCount});
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -58,6 +59,22 @@ exports.mailDetails = async (req, res) => {
             sender: sender.email
         };
         res.status(200).json(mailWithSender);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.markAsRead = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const mail = await Mail.findOneAndUpdate(
+            { _id: id, to: req.user._id },
+            { read: true },
+        );
+        if (!mail) {
+            return res.status(404).json({ message: 'Mail not found' });
+        }
+        res.status(200).json(mail);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

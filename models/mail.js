@@ -26,7 +26,8 @@ const mailSchema = new Schema({
     sentAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    read: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('Mail', mailSchema);
