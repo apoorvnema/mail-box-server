@@ -12,8 +12,10 @@ app.use(cors({
 dotenv.config();
 
 const userRoute = require("./routes/user");
+const mailRoute = require("./routes/mail");
 
 app.use('/user', userRoute);
+app.use('/mail', mailRoute);
 
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {

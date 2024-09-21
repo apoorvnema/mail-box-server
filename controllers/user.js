@@ -38,7 +38,7 @@ exports.logIn = async (req, res) => {
         if (!comparePass) {
             return res.status(401).json({ message: 'User not authorized' });
         }
-        res.status(200).json({ message: 'User login is successful', token: generateAccessToken(user._id, user.name, user.isPremiumUser) });
+        res.status(200).json({ message: 'User login is successful', token: generateAccessToken(user._id, user.name), name: user.name, email:user.email });
     }
     catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
