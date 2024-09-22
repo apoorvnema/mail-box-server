@@ -9,5 +9,6 @@ router.post('/send', authenticate, userController.send);
 router.get('/inbox', authenticate, userController.inbox);
 router.get('/inbox/:id', authenticate, userController.mailDetails);
 router.put('/mark-as-read/:id', authenticate, userController.markAsRead);
+router.delete('/delete/:id', authenticate, userController.deleteMail);
 
 module.exports = router;
