@@ -27,7 +27,7 @@ exports.send = async (req, res) => {
 exports.inbox = async (req, res) => {
     try {
         const mails = await Mail.find({ to: req.user._id });
-        const unreadCount = await Mail.countDocuments({ read: false });
+        const unreadCount = await Mail.countDocuments({ read: false, to: req.user._id });
         const senderIds = mails.map(mail => mail.from);
         const senders = await User.find({ _id: { $in: senderIds } });
         const senderMap = {};
