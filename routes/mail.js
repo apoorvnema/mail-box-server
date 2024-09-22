@@ -10,5 +10,7 @@ router.get('/inbox', authenticate, userController.inbox);
 router.get('/inbox/:id', authenticate, userController.mailDetails);
 router.put('/mark-as-read/:id', authenticate, userController.markAsRead);
 router.delete('/delete/:id', authenticate, userController.deleteMail);
+router.get('/sent', authenticate, userController.sentMails);
+router.get('/sent/:id', authenticate, userController.sentMailDetails);
 
 module.exports = router;

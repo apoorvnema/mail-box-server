@@ -92,3 +92,42 @@ exports.deleteMail = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+exports.sentMails = async (req, res) => {
+    try {
+        const mails = await Mail.find({ from: req.user._id });
+        const recipientIds = mails.map(mail => mail.to);
+        const recipients = await User.find({ _id: { $in: recipientIds } });
+        const recipientMap = {};
+        recipients.forEach(recipient => {
+            recipientMap[recipient._id] = recipient.email;
+        });
+        const mailsWithRecipients = mails.map(mail => ({
+            ...mail.toObject(),
+            recipient: recipientMap[mail.to]
+        }));
+        res.status(200).json(mailsWithRecipients);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.sentMailDetails = async (req, res) => {
+    try {
+        const mail = await Mail.findOne({ _id: req.params.id, from: req.user._id });
+        if (!mail) {
+            return res.status(404).json({ message: 'Mail not found' });
+        }
+        const recipient = await User.findById(mail.to);
+        if (!recipient) {
+            return res.status(404).json({ message: 'Recipient not found' });
+        }
+        const mailWithRecipient = {
+            ...mail.toObject(),
+            recipient: recipient.email
+        };
+        res.status(200).json(mailWithRecipient);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
